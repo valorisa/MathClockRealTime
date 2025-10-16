@@ -18,7 +18,7 @@ x = sp.Symbol('x', real=True)
 def generate_math_expression(value, prefer_short=False):
     # Expressions de base exactes (sans 0 + n, n^1, et complexes avec valeurs numériques)
     basic_expressions = [
-        r"\sqrt{%d^2}" % value, r"%d \cdot \frac{1}{\frac{1}{%d}}" % (value, value), r"\pi \times %d/\pi" % value
+        r"\sqrt{%d^2}" % value, r"\frac{%d \cdot 1}{1}" % value, r"\pi \times %d/\pi" % value
     ]
     
     # Intégrales complexes rigoureusement exactes avec valeurs numériques
@@ -44,7 +44,7 @@ def generate_math_expression(value, prefer_short=False):
             r"\sum_{k=1}^{%d} 1 \cdot \frac{%d - (k - 1)}{%d - (k - 1)}" % (value, value, value)
         ])
 
-    # Combinaison selon préférence
+    # Combinaison selon la préférence
     if prefer_short:
         pool = basic_expressions
     else:
@@ -130,7 +130,7 @@ def draw_clock():
         minute = now.minute
         second = now.second + now.microsecond / 1_000_000
         
-        # Rafraîchir les formules toutes les 5 minutes
+        # Rafraîchissement des formules toutes les 5 minutes
         if minute % 5 == 0 and second < 1:  # Vérifie le début de chaque intervalle de 5 minutes
             for h, text in enumerate(texts, 1):
                 if h in CRITICAL_POSITIONS:

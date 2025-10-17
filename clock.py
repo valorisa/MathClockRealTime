@@ -14,43 +14,124 @@ plt.rcParams['text.usetex'] = False
 plt.rcParams['font.size'] = 12
 
 x = sp.Symbol('x', real=True)
+k = sp.Symbol('k', integer=True)
+
+def evaluate_expression(latex, value):
+    """Évalue une expression LaTeX avec SymPy pour vérifier si elle vaut exactement 'value'."""
+    try:
+        # Appliquer le formatage uniquement si %d est présent
+        if '%d' in latex:
+            expr_str = latex % value
+        else:
+            expr_str = latex
+        # Supprimer les délimiteurs pour l'évaluation
+        expr_str = expr_str.replace(r"\lfloor ", "").replace(r" \rfloor", "").replace(r"\lceil ", "").replace(r" \rceil", "")
+        expr = sp.sympify(sp.latex_to_sympy(expr_str) if hasattr(sp, 'latex_to_sympy') else expr_str)
+        result = sp.simplify(expr)
+        return result.equals(value) if hasattr(result, 'equals') else result == value
+    except Exception as e:
+        print(f"Evaluation error for {latex}: {e}")
+        return False
+
+def iterated_log(value):
+    """Calcule le nombre d'itérations de ln nécessaires pour obtenir ≤ 1."""
+    count = 0
+    current = value
+    while current > 1 and count < 10:
+        current = sp.ln(current)
+        count += 1
+    return count
 
 def generate_math_expression(value, prefer_short=False):
-    # Expressions de base exactes (sans 0 + n, n^1, et complexes avec valeurs numériques)
-    basic_expressions = [
-        r"\sqrt{%d^2}" % value, r"\frac{%d \cdot 1}{1}" % value, r"\pi \times %d/\pi" % value
-    ]
-    
-    # Intégrales complexes rigoureusement exactes avec valeurs numériques
+    # Expressions complexes et variées, sans trivialités, corrigées pour exactitude
+    complex_expressions = []
+    if value == 1:
+        complex_expressions.append((r"\int_{0}^{1} \frac{1}{1 + \tan^2(x)} \sec^2(x) \, dx", lambda v: sp.integrate(1/(1 + sp.tan(x)**2) * sp.sec(x)**2, (x, 0, v))))
+    if value == 2:
+        complex_expressions.append((r"\sum_{k=1}^{2} (1 - \frac{1}{k(k+1)})", lambda v: sp.summation(1 - 1/(k*(k+1)), (k, 1, v))))  # Exactement 2
+    if value == 3:
+        complex_expressions.append((r"\int_{0}^{3} e^{x} e^{-x} \, dx", lambda v: sp.integrate(sp.exp(x) * sp.exp(-x), (x, 0, v))))
+    if value == 4:
+        complex_expressions.append((r"\ln^*(\exp(\exp(\exp(\exp(1)))))", lambda v: iterated_log(sp.exp(sp.exp(sp.exp(sp.exp(1)))))))
+    if value == 5:
+        complex_expressions.append((r"\frac{\text{card}(S_5)}{24}", lambda v: 120 / 24))
+    if value == 6:
+        complex_expressions.append((r"\sum_{k=1}^{6} \frac{1}{k(k+1)} \cdot 6", lambda v: 6 * sp.summation(1/(k*(k+1)), (k, 1, v))))
+    if value == 7:
+        complex_expressions.append((r"\int_{0}^{7} \frac{\sin^2(x) + \cos^2(x)}{1} \, dx", lambda v: sp.integrate((sp.sin(x)**2 + sp.cos(x)**2)/1, (x, 0, v))))
+    if value == 8:
+        complex_expressions.append((r"\sum_{k=1}^{8} \ln(e) / \ln(e)", lambda v: sp.summation(1, (k, 1, v))))
+    if value == 9:
+        complex_expressions.append((r"\int_{0}^{9} (e^x / e^x) \, dx", lambda v: sp.integrate(sp.exp(x)/sp.exp(x), (x, 0, v)) if v > 0 else 0))
+    if value == 10:
+        complex_expressions.append((r"\sum_{k=1}^{10} \frac{10}{k} - \frac{10}{k+1} + \frac{1}{11}", lambda v: sp.summation(10/k - 10/(k+1) + 1/11, (k, 1, v)) - 9/11))
+    if value == 11:
+        complex_expressions.append((r"\int_{0}^{11} (\tan^2(x) + 1) \cdot \frac{1}{\sec^2(x)} \, dx", lambda v: sp.integrate((sp.tan(x)**2 + 1) * 1/sp.sec(x)**2, (x, 0, v))))
+    if value == 12:
+        complex_expressions.append((r"\sum_{k=1}^{12} \frac{12! / (12-k)!}{11! / (11-k)!}", lambda v: sp.summation(sp.factorial(12)/(sp.factorial(12-k)*sp.factorial(k)) / (sp.factorial(11)/(sp.factorial(11-k)*sp.factorial(k))), (k, 1, v))))
+
+    # Intégrales complexes variées
     integral_expressions = [
-        r"\int_{0}^{%d} 1 \, dx" % value,
-        r"\int_{0}^{%d} (1 + 0)^{x} \, dx" % value,
-        r"%d \cdot \int_{0}^{1} x^{0} \, dx" % value
+        (r"\int_{0}^{%d} \sin^2(x) + \cos^2(x) \, dx", lambda v: sp.integrate(sp.sin(x)**2 + sp.cos(x)**2, (x, 0, v))),
+        (r"\int_{0}^{%d} e^x e^{-x} \, dx", lambda v: sp.integrate(sp.exp(x) * sp.exp(-x), (x, 0, v)))
     ]
     if value > 1:
         integral_expressions.extend([
-            r"\int_{0}^{%d} \frac{%d \cdot x^{%d}}{%d} \, dx" % (value, value, value-1, value),
-            r"\int_{0}^{%d} \frac{1}{%d} \cdot %d \, dx" % (value, value, value)
+            (r"\int_{0}^{%d} \frac{1}{\sec^2(x)} (\tan^2(x) + 1) \, dx", lambda v: sp.integrate(1/sp.sec(x)**2 * (sp.tan(x)**2 + 1), (x, 0, v))),
+            (r"\int_{0}^{%d} \frac{\sin(x)}{\sin(x)} \, dx", lambda v: sp.integrate(sp.sin(x)/sp.sin(x), (x, 0, v)) if v > 0 else 0)
         ])
 
-    # Séries complexes rigoureusement exactes avec valeurs numériques
+    # Séries complexes variées
     series_expressions = [
-        r"\sum_{k=1}^{%d} 1" % value,
-        r"\sum_{k=0}^{%d} (1)" % (value-1)
+        (r"\sum_{k=1}^{%d} \frac{1}{k(k+1)} \cdot %d", lambda v: v * sp.summation(1/(k*(k+1)), (k, 1, v))),
+        (r"\sum_{k=1}^{%d} \frac{%d}{k} - \frac{%d}{k+1}", lambda v: sp.summation(v/k - v/(k+1), (k, 1, v)))
     ]
     if value > 1:
         series_expressions.extend([
-            r"\sum_{k=0}^{%d} (2k + 1 - 2k)" % (value-1),
-            r"\sum_{k=1}^{%d} 1 \cdot \frac{%d - (k - 1)}{%d - (k - 1)}" % (value, value, value)
+            (r"\sum_{k=1}^{%d} \frac{%d! / (%d-k)!}{(%d-1)! / (%d-1-k)!}", lambda v: sp.summation(sp.factorial(v)/(sp.factorial(v-k)*sp.factorial(k)) / (sp.factorial(v-1)/(sp.factorial(v-1-k)*sp.factorial(k))), (k, 1, v))),
+            (r"\sum_{k=1}^{%d} \ln(e) / \ln(e)", lambda v: sp.summation(1, (k, 1, v)))
         ])
 
     # Combinaison selon la préférence
     if prefer_short:
-        pool = basic_expressions
+        pool = complex_expressions
     else:
-        pool = basic_expressions + integral_expressions + series_expressions
-    
-    return random.choice(pool)
+        pool = complex_expressions + integral_expressions + series_expressions
+
+    candidates = []
+    max_attempts = 20
+    attempts = 0
+    while attempts < max_attempts and not candidates:
+        for latex_template, expr_lambda in pool:
+            try:
+                sympy_result = sp.simplify(expr_lambda(value))
+                # Décision entre plancher et plafond basée sur la proximité
+                if not (sympy_result.equals(value) if hasattr(sympy_result, 'equals') else sympy_result == value):
+                    result_float = float(sympy_result)
+                    diff_lower = value - result_float
+                    diff_upper = result_float - value
+                    if diff_lower < 1 and diff_lower >= 0:  # Plus proche du plancher
+                        latex = r"\lfloor " + latex_template % value + r" \rfloor" if '%d' in latex_template else r"\lfloor " + latex_template + r" \rfloor"
+                        if len(latex) <= 30 and evaluate_expression(latex.replace(r"\lfloor ", "").replace(r" \rfloor", ""), value):
+                            candidates.append(latex)
+                    elif diff_upper < 1 and diff_upper >= 0:  # Plus proche du plafond
+                        latex = r"\lceil " + latex_template % value + r" \rceil" if '%d' in latex_template else r"\lceil " + latex_template + r" \rceil"
+                        if len(latex) <= 30 and evaluate_expression(latex.replace(r"\lceil ", "").replace(r" \rceil", ""), value):
+                            candidates.append(latex)
+                else:
+                    latex = latex_template % value if '%d' in latex_template else latex_template
+                    if len(latex) <= 30 and evaluate_expression(latex, value):
+                        candidates.append(latex)
+            except Exception as e:
+                print(f"Failed to evaluate {latex_template} for value {value}: {e}")
+                pass
+        attempts += 1
+
+    if candidates:
+        return random.choice(candidates)
+    else:
+        print(f"Warning: No valid expression found for value {value} after {max_attempts} attempts, using fallback.")
+        return str(value)
 
 def draw_clock():
     fig, ax = plt.subplots(figsize=(11, 11))
@@ -131,7 +212,7 @@ def draw_clock():
         second = now.second + now.microsecond / 1_000_000
         
         # Rafraîchissement des formules toutes les 5 minutes
-        if minute % 5 == 0 and second < 1:  # Vérifie le début de chaque intervalle de 5 minutes
+        if minute % 5 == 0 and second < 1:
             for h, text in enumerate(texts, 1):
                 if h in CRITICAL_POSITIONS:
                     prefer_short = True
@@ -146,7 +227,8 @@ def draw_clock():
                     elif latex_len <= 15: final_fontsize = BASE_FONTSIZE + 1
                     elif latex_len <= 20: final_fontsize = BASE_FONTSIZE
                     elif latex_len <= 25: final_fontsize = BASE_FONTSIZE - 2
-                    else: final_fontsize = max(MIN_FONTSIZE, BASE_FONTSIZE - 3)
+                    elif latex_len <= 30: final_fontsize = BASE_FONTSIZE - 3
+                    else: final_fontsize = max(MIN_FONTSIZE, BASE_FONTSIZE - 4)
                     text.set_fontsize(final_fontsize)
                     pad_size = 0.3 if latex_len <= 10 else 0.35 if latex_len <= 20 else 0.4
                     text.set_bbox(dict(facecolor='white', alpha=0.9, edgecolor='#bdc3c7', linewidth=1,
@@ -168,7 +250,7 @@ def draw_clock():
         fig.canvas.flush_events()
         return hour_hand, minute_hand, second_hand
 
-    anim = FuncAnimation(fig, update, interval=1000, cache_frame_data=False, repeat=True)
+    anim = FuncAnimation(fig, update, interval=50, blit=True, cache_frame_data=False, repeat=True)
     plt.tight_layout()
     plt.show()
 

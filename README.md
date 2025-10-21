@@ -61,7 +61,7 @@ python3 MathClockRealTime.py
 --- 
  
 ## Capture d'écran 
-Voici des exemples de l'horloge en action : 
+Voici un exemple de l'horloge en action : 
  
 ![Horloge principale](assets/clock.png) 
  
@@ -134,6 +134,7 @@ Ce projet est sous licence MIT. Voir le fichier [LICENSE.md](LICENSE.md) pour pl
 --- 
  
 Bon codage avec **MathClockRealTime** ! 
+
 
 
 

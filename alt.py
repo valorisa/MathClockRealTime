@@ -18,37 +18,124 @@ x = sp.Symbol('x', real=True)
 def generate_math_expression(value, prefer_short=False):
     # Expressions de base exactes
     basic_expressions = [
-        r"\sqrt{%d^2}" % value, r"\pi \times %d/\pi" % value
+        r"\sqrt{%d^2}" % value,
+        r"\pi \times %d / \pi" % value
+    ]
+
+    # Expressions trigonométriques généralisées
+    trig_expressions = [
+        r"%d \cdot (\cos^2 x + \sin^2 x)" % value if value > 1 else r"\cos^2 x + \sin^2 x"
+    ]
+
+    # Expressions avec logarithmes
+    log_expressions = [
+        r"\ln(e^{%d})" % value,
+        r"\log_e (e^{%d})" % value
+    ]
+
+    # Expressions avec racines de logarithmes
+    root_log_expressions = [
+        r"\sqrt{\ln(e^{%d})}" % (value**2)
+    ]
+
+    # Expressions avec nombres complexes
+    complex_expressions = [
+        r"\mathrm{Re}(%d e^{i \cdot 0})" % value,
+        r"\mathrm{Re}(%d + 0i)" % value
+    ]
+
+    # Expressions avec modules de complexes au carré
+    module_expressions = []
+    if value == 1:
+        module_expressions += [r"|i|^2"]
+    if value == 4:
+        module_expressions += [r"|2i|^2"]
+    if value == 9:
+        module_expressions += [r"|3i|^2"]
+
+    # Expressions avec factorielles
+    factorial_expressions = [
+        r"\frac{%d!}{(%d-1)!}" % (value, value) if value > 0 else ""
+    ]
+
+    # Expressions avec quotients de factorielles généralisés
+    quotient_factorial_expressions = [
+        r"\dfrac{%d!}{(%d-1)!}" % (value, value) if value > 0 else ""
     ]
 
     # Intégrales complexes rigoureusement exactes, incluant cos^2(x) + sin^2(x)
     integral_expressions = [
-        r"\int_{0}^{%d} 1 \, dx" % value,  # Toujours exact : donne %d
-        r"\int_{0}^{%d} (1 + 0)^{x} \, dx" % value,  # Toujours exact : donne %d
-        r"\int_{0}^{%d} (\cos^2(x) + \sin^2(x)) \, dx" % value  # Identité trigonométrique : donne %d
+        r"\int_{0}^{%d} 1 \, dx" % value,
+        r"\int_{0}^{%d} (1 + 0)^{x} \, dx" % value,
+        r"\int_{0}^{%d} (\cos^2(x) + \sin^2(x)) \, dx" % value
     ]
     if value > 1:
         integral_expressions.extend([
-            r"\int_{0}^{%d} \frac{1}{1} \, dx" % value,  # Simplifié pour donner %d
-            r"%d \cdot \int_{0}^{1} x^{0} \, dx" % value  # Toujours exact : donne %d
+            r"\int_{0}^{%d} \frac{1}{1} \, dx" % value,
+            r"%d \cdot \int_{0}^{1} x^{0} \, dx" % value
         ])
+
+    # Intégrales avec sinus
+    sin_integral_expressions = []
+    if value == 1:
+        sin_integral_expressions += [r"\int_0^{\pi/2} \sin x \, dx"]
+    if value == 2:
+        sin_integral_expressions += [r"\int_0^\pi \sin x \, dx"]
 
     # Séries complexes rigoureusement exactes
     series_expressions = [
         r"\sum_{k=1}^{%d} 1" % value,
-        r"\sum_{k=0}^{%d} (1)" % (value-1)
+        r"\sum_{k=0}^{%d-1} 1" % value
     ]
     if value > 1:
         series_expressions.extend([
-            r"\sum_{k=1}^{%d} 1" % (value-1),  # Corrige pour donner %d
-            r"\sum_{k=1}^{%d} 1 \cdot 1" % value  # Toujours exact : donne %d
+            r"\sum_{k=1}^{%d} 1 \cdot 1" % value
         ])
 
+    # Expressions avec factorielles multipliées par des sommes (sigma)
+    factorial_sum_expressions = []
+    if value == 3:
+        factorial_sum_expressions += [r"3! \times \left( \sum_{k=0}^{0} 1 \right)"]
+    if value == 12:
+        factorial_sum_expressions += [r"3! \times \sum_{k=1}^{4} \frac{1}{3}", r"4! \times \sum_{k=1}^{1} \frac{1}{2}"]
+
+    # Expressions spécifiques inspirées de l'image
+    specific_expressions = []
+    if value == 1:
+        specific_expressions += [r"\cos^2 x + \sin^2 x", r"|i|^2", r"\mathrm{Card}(S_1)"]
+    if value == 2:
+        specific_expressions += [r"\int_0^\pi \sin x \, dx", r"\mathrm{Card}(S_2)", r"\sqrt{\log_e (e^{4})}"]
+    if value == 3:
+        specific_expressions += [r"\dfrac{\mathrm{Card}(S_3)}{2}", r"3! \times \left( \sum_{k=0}^{1} (-1)^k \right)"]
+    if value == 4:
+        specific_expressions += [r"\log^* (e^{e^{e^e}})", r"\dfrac{\mathrm{Card}(S_4)}{6}", r"|2i|^2", r"\sqrt{\ln(e^{16})}"]
+    if value == 5:
+        specific_expressions += [r"\dfrac{\mathrm{Card}(S_5)}{24}"]
+    if value == 6:
+        specific_expressions += [r"\mathrm{Re}(2 + 4 e^{i \cdot 0})", r"\mathrm{Card}(S_3)"]
+    if value == 7:
+        specific_expressions += [r"\dfrac{49}{7}"]
+    if value == 8:
+        specific_expressions += [r"\ln(e^8)"]
+    if value == 9:
+        specific_expressions += [r"|3i|^2"]
+    if value == 10:
+        specific_expressions += [r"\dfrac{10!}{9!}"]
+    if value == 11:
+        specific_expressions += [r"3! + \sqrt{25}"]
+    if value == 12:
+        specific_expressions += [r"\dfrac{4!}{2}", r"3! \times 2", r"4! \times \sum_{k=1}^{1} \dfrac{1}{2!}"]
+
     # Combinaison selon la préférence
+    all_pools = (basic_expressions + trig_expressions + log_expressions + root_log_expressions + complex_expressions +
+                 module_expressions + factorial_expressions + quotient_factorial_expressions + integral_expressions +
+                 sin_integral_expressions + series_expressions + factorial_sum_expressions + specific_expressions)
+    short_pools = [expr for expr in all_pools if len(expr) < 20]
+
     if prefer_short:
-        pool = basic_expressions
+        pool = short_pools if short_pools else all_pools
     else:
-        pool = basic_expressions + integral_expressions + series_expressions
+        pool = all_pools
 
     return random.choice(pool)
 
@@ -95,7 +182,6 @@ def draw_clock():
             prefer_short = False
         x_pos = distance * np.cos(angle)
         y_pos = distance * np.sin(angle)
-
         best_latex = generate_math_expression(h, prefer_short)
         text = ax.text(x_pos, y_pos, f"${best_latex}$", fontsize=BASE_FONTSIZE, ha='center', va='center',
                        bbox=dict(facecolor='white', alpha=0.9, edgecolor='#bdc3c7', linewidth=1,
@@ -106,7 +192,7 @@ def draw_clock():
     print("🕐 GÉNÉRATION DE L'HORLOGE MATHÉMATIQUE")
     print("="*70)
     for h, text in enumerate(texts, 1):
-        print(f"✓ Position {h:2d}: ${text.get_text()[1:-1]}$ ({len(text.get_text()[1:-1])} caractères)")  # Supprime $ pour le comptage
+        print(f"✓ Position {h:2d}: ${text.get_text()[1:-1]}$ ({len(text.get_text()[1:-1])} caractères)")
     print("="*70)
     print("✅ Horloge générée avec succès! Les expressions seront rafraîchies toutes les 5 minutes.\n")
 
@@ -120,8 +206,8 @@ def draw_clock():
 
     # Légende minimisée dans le coin inférieur droit
     legend_elements = [plt.Line2D([0], [0], color='#8e44ad', linewidth=8, label='Heures'),
-                      plt.Line2D([0], [0], color='#e74c3c', linewidth=5, label='Minutes'),
-                      plt.Line2D([0], [0], color='#27ae60', linewidth=2, label='Secondes')]
+                       plt.Line2D([0], [0], color='#e74c3c', linewidth=5, label='Minutes'),
+                       plt.Line2D([0], [0], color='#27ae60', linewidth=2, label='Secondes')]
     ax.legend(handles=legend_elements, loc='lower right', fontsize=8, framealpha=0.7, edgecolor='#bdc3c7')
 
     def update(frame):
@@ -131,7 +217,7 @@ def draw_clock():
         second = now.second + now.microsecond / 1_000_000
 
         # Rafraîchissement des formules toutes les 5 minutes
-        if minute % 5 == 0 and second < 1:  # Vérifie le début de chaque intervalle de 5 minutes
+        if minute % 5 == 0 and second < 1:
             for h, text in enumerate(texts, 1):
                 if h in CRITICAL_POSITIONS:
                     prefer_short = True
@@ -140,17 +226,16 @@ def draw_clock():
                 best_latex = generate_math_expression(h, prefer_short)
                 if len(best_latex) <= MAX_LATEX_LENGTH:
                     text.set_text(f"${best_latex}$")
-                    # Ajuster la taille de police dynamiquement
-                    latex_len = len(best_latex)
-                    if latex_len <= 10: final_fontsize = BASE_FONTSIZE + 2
-                    elif latex_len <= 15: final_fontsize = BASE_FONTSIZE + 1
-                    elif latex_len <= 20: final_fontsize = BASE_FONTSIZE
-                    elif latex_len <= 25: final_fontsize = BASE_FONTSIZE - 2
-                    else: final_fontsize = max(MIN_FONTSIZE, BASE_FONTSIZE - 3)
-                    text.set_fontsize(final_fontsize)
-                    pad_size = 0.3 if latex_len <= 10 else 0.35 if latex_len <= 20 else 0.4
-                    text.set_bbox(dict(facecolor='white', alpha=0.9, edgecolor='#bdc3c7', linewidth=1,
-                                     boxstyle=f'round,pad={pad_size},rounding_size=0.1'))
+                latex_len = len(best_latex)
+                if latex_len <= 10: final_fontsize = BASE_FONTSIZE + 2
+                elif latex_len <= 15: final_fontsize = BASE_FONTSIZE + 1
+                elif latex_len <= 20: final_fontsize = BASE_FONTSIZE
+                elif latex_len <= 25: final_fontsize = BASE_FONTSIZE - 2
+                else: final_fontsize = max(MIN_FONTSIZE, BASE_FONTSIZE - 3)
+                text.set_fontsize(final_fontsize)
+                pad_size = 0.3 if latex_len <= 10 else 0.35 if latex_len <= 20 else 0.4
+                text.set_bbox(dict(facecolor='white', alpha=0.9, edgecolor='#bdc3c7', linewidth=1,
+                                   boxstyle=f'round,pad={pad_size},rounding_size=0.1'))
             print(f"\nRafraîchissement des formules à {now.strftime('%H:%M:%S')}")
             for h, text in enumerate(texts, 1):
                 print(f"✓ Position {h:2d}: ${text.get_text()[1:-1]}$ ({len(text.get_text()[1:-1])} caractères)")
@@ -163,12 +248,22 @@ def draw_clock():
         hour_hand.set_data([0, 0.50 * np.cos(hour_angle)], [0, 0.50 * np.sin(hour_angle)])
         minute_hand.set_data([0, 0.75 * np.cos(minute_angle)], [0, 0.75 * np.sin(minute_angle)])
         second_hand.set_data([0, 0.88 * np.cos(second_angle)], [0, 0.88 * np.sin(second_angle)])
-        print(f"Updating: {now.strftime('%H:%M:%S.%f')[:-3]}")  # Débogage
+
+        print(f"Updating: {now.strftime('%H:%M:%S.%f')[:-3]}")
         fig.canvas.draw()
         fig.canvas.flush_events()
         return hour_hand, minute_hand, second_hand
 
-    anim = FuncAnimation(fig, update, interval=1000, cache_frame_data=False, repeat=True)
+    # Initialize the animation with a valid interval and proper cleanup
+    anim = FuncAnimation(fig, update, frames=None, interval=1000, blit=True, cache_frame_data=False, repeat=True)
+
+    # Add a close event to handle cleanup
+    def on_close(event):
+        print("Closing the clock animation gracefully...")
+        plt.close()
+
+    fig.canvas.mpl_connect('close_event', on_close)
+
     plt.tight_layout()
     plt.show()
 

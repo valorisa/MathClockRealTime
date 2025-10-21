@@ -8,7 +8,7 @@ MathClockRealTime est une horloge graphique avancée animée en temps réel où 
 - [Fonctionnalités](#fonctionnalités) 
 - [Prérequis](#prérequis) 
 - [Installation et exécution](#installation-et-exécution) 
-- [Captures d'écran](#captures-d'écran) 
+- [Capture d'écran](#capture-d'écran) 
 - [Structure du projet](#structure-du-projet) 
 - [Utilisation de Git et création du dépôt GitHub](#utilisation-de-git-et-création-du-dépôt-github) 
 - [Note](#note) 
@@ -134,4 +134,5 @@ Ce projet est sous licence MIT. Voir le fichier [LICENSE.md](LICENSE.md) pour pl
 --- 
  
 Bon codage avec **MathClockRealTime** ! 
+
 

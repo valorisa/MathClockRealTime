@@ -65,8 +65,6 @@ Voici des exemples de l'horloge en action :
  
 ![Horloge principale](assets/clock.png) 
  
-![Autre vue avec expressions](assets/clock2.png) 
- 
 --- 
  
 ## Structure du projet 

@@ -80,12 +80,11 @@ Voici l'arborescence des dossiers et fichiers du projet :
 ├── alt.py 
 ├── alt_backup.py 
 ├── assets 
-│   ├── clock.png 
-│   └── clock2.png 
+│   └── clock.png 
 ├── clock.py 
 └── clock_backup.py 
  
-1 directory, 11 files 
+1 directory, 10 files 
 ``` 
  
 --- 
@@ -135,3 +134,4 @@ Ce projet est sous licence MIT. Voir le fichier [LICENSE.md](LICENSE.md) pour pl
 --- 
  
 Bon codage avec **MathClockRealTime** ! 
+

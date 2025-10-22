@@ -79,8 +79,7 @@ Voici l'arborescence des dossiers et fichiers du projet :
 ├── README_backup.md  
 └── assets 
     └── clock.png 
- 
- 
+  
 1 directory, 6 files 
 ``` 
  
@@ -131,6 +130,7 @@ Ce projet est sous licence MIT. Voir le fichier [LICENSE.md](LICENSE.md) pour pl
 --- 
  
 Bon codage avec **MathClockRealTime** ! 
+
 
 
 

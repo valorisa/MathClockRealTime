@@ -76,15 +76,12 @@ Voici l'arborescence des dossiers et fichiers du projet :
 ├── MathClockRealTime.py 
 ├── MathClockRealTime_backup.py 
 ├── README.md 
-├── README_backup.md 
-├── alt.py 
-├── alt_backup.py 
-├── assets 
-│   └── clock.png 
-├── clock.py 
-└── clock_backup.py 
+├── README_backup.md  
+└── assets 
+    └── clock.png 
  
-1 directory, 10 files 
+ 
+1 directory, 6 files 
 ``` 
  
 --- 
@@ -134,6 +131,7 @@ Ce projet est sous licence MIT. Voir le fichier [LICENSE.md](LICENSE.md) pour pl
 --- 
  
 Bon codage avec **MathClockRealTime** ! 
+
 
 
 
